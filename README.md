@@ -73,6 +73,14 @@ The number of threads doing useful work during the upsweep phase of the work-eff
 
 By keeping a running count of number of active threads and launching a number of blocks based on that value each pass, we can optimize this issue. With some index manipulation, doing this significantly increases the performance of work-efficient scan. 
 
+<p align="center">
+  <img src="img/Average Time vs. Array Size (Power of Two)WE.png" width="800"><br>
+</p>
+
+<p align="center">
+  <img src="img/Average Time vs. Array Size (Non Power of Two)WE.png" width="800"><br>
+</p>
+
 ### Average Performance of all Scan Implementations over Different Array Sizes
 <p align="center">
   <img src="img/Average Time vs. Array Size (Non Power of Two).png" width="800"><br>
@@ -94,3 +102,61 @@ For smaller array sizes, the GPU's fixed costs (kernel launch overhead, block sc
 ### Thrust Exclusive Scan Under the Hood
 
 ### Test Results 
+
+These are test results using an array of size $2^{24}$ (for power of two) and ~ $2^{24}$ (for non power of two):
+
+```
+****************
+** SCAN TESTS **
+****************
+    [  49   3  22  17  17  31  46  25  36  30  33   4  21 ...  46   0 ]
+==== cpu scan, power-of-two ====
+   elapsed time: 7.5705ms    (std::chrono Measured)
+    [   0  49  52  74  91 108 139 185 210 246 276 309 313 ... 410913412 410913458 ]
+==== cpu scan, non-power-of-two ====
+   elapsed time: 7.4517ms    (std::chrono Measured)
+    [   0  49  52  74  91 108 139 185 210 246 276 309 313 ... 410913331 410913343 ]
+    passed
+==== naive scan, power-of-two ====
+   elapsed time: 10.5324ms    (CUDA Measured)
+    passed
+==== naive scan, non-power-of-two ====
+   elapsed time: 10.3422ms    (CUDA Measured)
+    passed
+==== work-efficient scan, power-of-two ====
+   elapsed time: 4.35366ms    (CUDA Measured)
+    passed
+==== work-efficient scan, non-power-of-two ====
+   elapsed time: 4.11389ms    (CUDA Measured)
+    passed
+==== thrust scan, power-of-two ====
+   elapsed time: 0.935424ms    (CUDA Measured)
+    passed
+==== thrust scan, non-power-of-two ====
+   elapsed time: 0.97968ms    (CUDA Measured)
+    passed
+
+*****************************
+** STREAM COMPACTION TESTS **
+*****************************
+    [   1   1   0   1   2   3   2   3   2   2   2   0   0 ...   3   0 ]
+==== cpu compact without scan, power-of-two ====
+   elapsed time: 21.2334ms    (std::chrono Measured)
+    [   1   1   1   2   3   2   3   2   2   2   2   1   3 ...   1   3 ]
+    passed
+==== cpu compact without scan, non-power-of-two ====
+   elapsed time: 21.3112ms    (std::chrono Measured)
+    [   1   1   1   2   3   2   3   2   2   2   2   1   3 ...   2   1 ]
+    passed
+==== cpu compact with scan ====
+   elapsed time: 67.8522ms    (std::chrono Measured)
+    [   1   1   1   2   3   2   3   2   2   2   2   1   3 ...   1   3 ]
+    passed
+==== work-efficient compact, power-of-two ====
+   elapsed time: 5.84298ms    (CUDA Measured)
+    [   1   1   1   2   3   2   3   2   2   2   2   1   3 ...   1   3 ]
+    passed
+==== work-efficient compact, non-power-of-two ====
+   elapsed time: 5.42915ms    (CUDA Measured)
+    [   1   1   1   2   3   2   3   2   2   2   2   1   3 ...   2   1 ]
+    passed
