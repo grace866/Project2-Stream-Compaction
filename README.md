@@ -73,6 +73,14 @@ The number of threads doing useful work during the upsweep phase of the work-eff
 
 By keeping a running count of number of active threads and launching a number of blocks based on that value each pass, we can optimize this issue. With some index manipulation, doing this significantly increases the performance of work-efficient scan. 
 
+<p align="center">
+  <img src="img/Average Time vs. Array Size (Power of Two)WE.png" width="800"><br>
+</p>
+
+<p align="center">
+  <img src="img/Average Time vs. Array Size (Non Power of Two)WE.png" width="800"><br>
+</p>
+
 ### Average Performance of all Scan Implementations over Different Array Sizes
 <p align="center">
   <img src="img/Average Time vs. Array Size (Non Power of Two).png" width="800"><br>
