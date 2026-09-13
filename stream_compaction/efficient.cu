@@ -4,8 +4,8 @@
 #include "efficient.h"
 
 #define BLOCK_SIZE 256
-#define NAIVE_SWEEP 0
-#define EFFICIENT_SWEEP 1
+#define NAIVE_SWEEP 1
+#define EFFICIENT_SWEEP 0
 
 namespace StreamCompaction {
     namespace Efficient {
