@@ -69,16 +69,27 @@ Steps 1 and 3 can be parallelized on the GPU and computed with a simple loop on 
 ## Performance Analysis 
 
 ### Optimizing the Work-Efficient Algorithm 
-The number of threads doing useful work during the upsweep phase of the work-efficient algorithm starts at N/2 (N = length of the input array) and halves with each of the $log_2 n$ passes. Conversely, the downsweep phase begins with a single thread doing useful work, the number doubling with each of the #log_2 n$ passes. The key is that the number of threads doing useful work changes with each pass, so launching the same number of blocks each iteration would be wasteful and lead to warp divergence (since we would be determining which threads do work using a conditional inside the kernel). 
+The number of threads doing useful work during the upsweep phase of the work-efficient algorithm starts at N/2 (N = length of the input array) and halves with each of the $log_2 n$ passes. Conversely, the downsweep phase begins with a single thread doing useful work, the number doubling with each of the $log_2 n$ passes. The key is that the number of threads doing useful work changes with each pass, so launching the same number of blocks each iteration would be wasteful and lead to warp divergence (since we would be determining which threads do work using a conditional inside the kernel). 
 
 By keeping a running count of number of active threads and launching a number of blocks based on that value each pass, we can optimize this issue. With some index manipulation, doing this significantly increases the performance of work-efficient scan. 
 
 ### Average Performance of all Scan Implementations over Different Array Sizes
+<p align="center">
+  <img src="img/Average Time vs. Array Size (Non Power of Two).png" width="800"><br>
+</p>
+<p align="center">
+  <img src="img/Average Time vs. Array Size (Non Power of Two).png" width="800"><br>
+</p>
+
 Testing different block sizes for the naive and work-efficient implementations did not show any significant performance variation. Block size was fixed at 128 for naive parallel scan and 256 for the work-efficient method. 
 
 Generally, as array sizes increase, both CPU and GPU compute time increase. For larger array sizes, the work-efficient method performed significantly better than the CPU implementation as well as the naive GPU implementation. What was interesting was that the naive GPU method consistently performed the worst across all array sizes. Despite having a better algorithmic complexity compared to the CPU implementation, it is possible that the combination of warp divergence, global memory traffic, and overhead associated with scheduling blocks is contributing to decreased performance. 
 
-For smaller array sizes, the GPU's fixed costs (kernel launch overhead, block scheduling overhead, etc.) become more significant and start to dominate runtime. This explains why we observe the best performance in the CPU implementation over all other methods for array sizes $2^{16}$-$2^{20}$. 
+<p align="center">
+  <img src="img/Average Time vs. Array Size (Power of Two) (1).png" width="800"><br>
+</p>
+
+For smaller array sizes, the GPU's fixed costs (kernel launch overhead, block scheduling overhead, etc.) become more significant and start to dominate runtime. This explains why we observe the best performance in the CPU implementation over all other methods for array sizes $2^{16} - 2^{20}$. 
 
 ### Thrust Exclusive Scan Under the Hood
 
