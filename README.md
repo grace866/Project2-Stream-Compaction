@@ -100,6 +100,13 @@ Generally, as array sizes increase, both CPU and GPU compute time increase. For 
 For smaller array sizes, the GPU's fixed costs (kernel launch overhead, block scheduling overhead, etc.) become more significant and start to dominate runtime. This explains why we observe the best performance in the CPU implementation over all other methods for array sizes $2^{16} - 2^{20}$. 
 
 ### Thrust Exclusive Scan Under the Hood
+Using Nsight Compute, we can gain some insight into the performance of Thrust's exclusive scan.
+
+<p align="center">
+  <img src="img/Thrust.png" width="800"><br>
+</p>
+
+High memory throughput indicates that a large percentage of peak memory bandwidth is being achieved, which means that data is moving as fast as possible. Combined with high compute throughput, we can see that Thrust's exclusive scan balances memory handling and compute well, using resources efficiently with every launch. It is likely that Thrust makes use of shared memory, which decreases the global memory traffic that would become the bottleneck for compute. 
 
 ### Test Results 
 
